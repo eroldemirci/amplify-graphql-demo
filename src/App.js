@@ -21,10 +21,18 @@ import {
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
+  const [image, setImage] = useState(null)
 
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  const onImageChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(URL.createObjectURL(event.target.files[0]));
+      console.log(URL.createObjectURL(event.target.files[0]))
+    }
+   }
 
   async function fetchNotes() {
     const apiData = await API.graphql({ query: listNotes });
@@ -44,13 +52,13 @@ const App = ({ signOut }) => {
   async function createNote(event) {
     event.preventDefault();
     const form = new FormData(event.target);
-    const image = form.get("image");
+   // const image = form.get("image");
     const data = {
       name: form.get("name"),
       description: form.get("description"),
-      image: image.name,
+     // image: image,
     };
-    if (!!data.image) await Storage.put(data.name, image);
+   // if (!!data.image) await Storage.put(data.name, image);
     await API.graphql({
       query: createNoteMutation,
       variables: { input: data },
@@ -72,12 +80,6 @@ const App = ({ signOut }) => {
   return (
     <View className="App">
       <Heading level={1}>My Notes App</Heading>
-      <View
-        name="image"
-        as="input"
-        type="file"
-        style={{ alignSelf: "end" }}
-      />
       <View as="form" margin="3rem 0" onSubmit={createNote}>
         <Flex direction="row" justifyContent="center">
           <TextField
