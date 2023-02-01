@@ -7,7 +7,6 @@ import {
   Button,
   Flex,
   Heading,
-  Image,
   Text,
   TextField,
   View,
@@ -21,18 +20,10 @@ import {
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
-  const [image, setImage] = useState(null)
 
   useEffect(() => {
     fetchNotes();
   }, []);
-
-  const onImageChange = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      setImage(URL.createObjectURL(event.target.files[0]));
-      console.log(URL.createObjectURL(event.target.files[0]))
-    }
-   }
 
   async function fetchNotes() {
     const apiData = await API.graphql({ query: listNotes });
@@ -52,11 +43,11 @@ const App = ({ signOut }) => {
   async function createNote(event) {
     event.preventDefault();
     const form = new FormData(event.target);
-   // const image = form.get("image");
+    // const image = form.get("image");
     const data = {
       name: form.get("name"),
       description: form.get("description"),
-     // image: image,
+     // image: image.name,
     };
    // if (!!data.image) await Storage.put(data.name, image);
     await API.graphql({
@@ -116,13 +107,6 @@ const App = ({ signOut }) => {
             {note.name}
           </Text>
           <Text as="span">{note.description}</Text>
-          {note.image && (
-            <Image
-              src={note.image}
-              alt={`visual aid for ${notes.name}`}
-              style={{ width: 400 }}
-            />
-          )}
           <Button variation="link" onClick={() => deleteNote(note)}>
             Delete note
           </Button>
